@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Baseball Defender - Learn Where to Go!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cardinal-red: #C41E3A;
+            --cardinal-dark: #8B0000;
+            --white: #FFFFFF;
+            --gray-light: #F5F5F5;
+            --gray-medium: #D4D4D4;
+            --gray-dark: #6B6B6B;
+            --gray-darker: #3D3D3D;
+            --gold-accent: #FFD700;
+            --green-grass: #2D8B2D;
+            --dirt-brown: #8B6914;
+            --success-green: #22C55E;
+            --warning-orange: #F97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--gray-light) 0%, var(--gray-medium) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 140px;
+            height: 140px;
+            background: var(--white);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: bounce 1s ease infinite;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .splash-logo .baseball {
+            width: 90px;
+            height: 90px;
+            background: var(--white);
+            border-radius: 50%;
+            border: 3px solid var(--cardinal-red);
+            position: relative;
+        }
+
+        .splash-logo .baseball::before,
+        .splash-logo .baseball::after {
+            content: '';
+            position: absolute;
+            border: 2px solid var(--cardinal-red);
+            border-radius: 50%;
+            width: 60px;
+            height: 80px;
+        }
+
+        .splash-logo .baseball::before {
+            top: 2px;
+            left: -25px;
+            border-right: none;
+        }
+
+        .splash-logo .baseball::after {
+            top: 2px;
+            right: -25px;
+            border-left: none;
+        }
+
+        .splash-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.8rem;
+            color: var(--white);
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            letter-spacing: 4px;
+            text-align: center;
+        }
+
+        .splash-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .start-btn {
+            margin-top: 40px;
+            padding: 18px 60px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: var(--white);
+            color: var(--cardinal-red);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 42px;
+            height: 42px;
+            background: var(--white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .header-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 22px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 20px;
+            border-radius: 15px;
+        }
+
+        .nav-item.active {
+            background: rgba(196, 30, 58, 0.1);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-item span {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gray-dark);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active span {
+            color: var(--cardinal-red);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            padding-bottom: 110px;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Screen */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            border-radius: 25px;
+            padding: 25px;
+            color: var(--white);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '⚾';
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .welcome-greeting {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .welcome-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--gold-accent);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            color: var(--gray-darker);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Level Cards */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .level-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid var(--gray-light);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .level-card.unlocked {
+            border-color: var(--cardinal-red);
+        }
+
+        .level-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-card.completed {
+            border-color: var(--success-green);
+        }
+
+        .level-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            color: var(--white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+
+        .level-card.locked .level-number {
+            background: var(--gray-medium);
+        }
+
+        .level-card.completed .level-number {
+            background: var(--success-green);
+        }
+
+        .level-title {
+            font-weight: 800;
+            color: var(--gray-darker);
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .level-desc {
+            font-size: 0.75rem;
+            color: var(--gray-dark);
+        }
+
+        .level-stars {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .level-stars .star {
+            color: var(--gray-medium);
+        }
+
+        .level-stars .star.earned {
+            color: var(--gold-accent);
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Quick Play Card */
+        .quick-play-card {
+            background: linear-gradient(135deg, var(--gray-darker) 0%, #1a1a1a 100%);
+            border-radius: 20px;
+            padding: 22px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-play-card:hover {
+            transform: scale(1.02);
+        }
+
+        .quick-play-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--cardinal-red);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .quick-play-text h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .quick-play-text p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Learn Screen */
+        .position-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .position-card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+        }
+
+        .position-card:hover {
+            transform: translateX(8px);
+            border-color: var(--cardinal-red);
+        }
+
+        .position-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .position-info {
+            flex: 1;
+        }
+
+        .position-name {
+            font-weight: 800;
+            color: var(--gray-darker);
+            font-size: 1.05rem;
+        }
+
+        .position-desc {
+            font-size: 0.8rem;
+            color: var(--gray-dark);
+            margin-top: 2px;
+        }
+
+        .position-arrow {
+            color: var(--gray-medium);
+            font-size: 1.2rem;
+        }
+
+        /* Game Container */
+        .game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+        }
+
+        .game-container.active {
+            display: flex;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .game-back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--white);
+        }
+
+        .game-info {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .game-level {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .game-scenario-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .game-score {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 14px;
+            border-radius: 20px;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Baseball Field */
+        .field-container {
+            flex: 1;
+            min-height: 280px;
+            position: relative;
+            background: linear-gradient(to bottom, #6BB3E0 0%, #6BB3E0 25%, var(--green-grass) 25%);
+            overflow: hidden;
+        }
+
+        .baseball-field {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 380px;
+            aspect-ratio: 1.1;
+        }
+
+        .infield-dirt {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 52%;
+            height: 52%;
+            background: var(--dirt-brown);
+            border-radius: 8px;
+        }
+
+        .infield-grass {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 55%;
+            height: 55%;
+            background: var(--green-grass);
+            border-radius: 5px;
+        }
+
+        .base {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--white);
+            transform: rotate(45deg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
+
+        .home-plate {
+            bottom: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--white);
+            clip-path: polygon(50% 0%, 100% 30%, 100% 100%, 0% 100%, 0% 30%);
+        }
+
+        .first-base { bottom: 28%; right: 20%; }
+        .second-base { bottom: 48%; left: 50%; transform: translateX(-50%) rotate(45deg); }
+        .third-base { bottom: 28%; left: 20%; }
+
+        .foul-line {
+            position: absolute;
+            bottom: 5%;
+            height: 3px;
+            background: var(--white);
+            width: 200%;
+            z-index: 1;
+        }
+
+        .foul-line-left {
+            left: 50%;
+            transform-origin: left center;
+            transform: rotate(-45deg);
+        }
+
+        .foul-line-right {
+            right: 50%;
+            transform-origin: right center;
+            transform: rotate(45deg);
+        }
+
+        /* Players */
+        .player {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.7rem;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .player.selectable {
+            animation: pulse 1.2s ease infinite;
+            border-color: var(--gold-accent);
+            border-width: 3px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7), 0 3px 12px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(255, 215, 0, 0), 0 3px 12px rgba(0,0,0,0.4); }
+        }
+
+        .player.correct {
+            background: var(--success-green) !important;
+            animation: correctBounce 0.5s ease;
+            transform: scale(1.2);
+        }
+
+        @keyframes correctBounce {
+            0%, 100% { transform: scale(1.2); }
+            50% { transform: scale(1.4); }
+        }
+
+        .player.incorrect {
+            background: var(--warning-orange) !important;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .player-pitcher { background: var(--cardinal-red); bottom: 35%; left: calc(50% - 17px); }
+        .player-catcher { background: var(--gray-darker); bottom: 0%; left: calc(50% - 17px); }
+        .player-1b { background: var(--cardinal-red); bottom: 24%; right: 16%; }
+        .player-2b { background: var(--cardinal-red); bottom: 40%; right: 26%; }
+        .player-3b { background: var(--cardinal-red); bottom: 24%; left: 16%; }
+        .player-ss { background: var(--cardinal-red); bottom: 40%; left: 26%; }
+        .player-lf { background: var(--cardinal-dark); bottom: 68%; left: 12%; }
+        .player-cf { background: var(--cardinal-dark); bottom: 78%; left: calc(50% - 17px); }
+        .player-rf { background: var(--cardinal-dark); bottom: 68%; right: 12%; }
+
+        /* Runner */
+        .runner {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: #2563EB;
+            border-radius: 50%;
+            z-index: 8;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            border: 2px solid var(--white);
+        }
+
+        .runner.visible { display: block; }
+        .runner.on-first { bottom: 26%; right: 18%; }
+        .runner.on-second { bottom: 46%; left: calc(50% - 11px); }
+        .runner.on-third { bottom: 26%; left: 18%; }
+
+        /* Ball indicator */
+        .ball-indicator {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--white);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 15;
+            display: none;
+        }
+
+        .ball-indicator.visible {
+            display: block;
+            animation: ballPulse 0.8s ease infinite;
+        }
+
+        @keyframes ballPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* Scenario Panel */
+        .scenario-panel {
+            background: var(--white);
+            padding: 18px 20px 25px;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .scenario-situation {
+            background: var(--gray-light);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .situation-label {
+            font-size: 0.7rem;
+            color: var(--gray-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .situation-text {
+            font-weight: 700;
+            color: var(--gray-darker);
+            font-size: 1rem;
+        }
+
+        .scenario-question {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gray-darker);
+            text-align: center;
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        .position-highlight {
+            color: var(--cardinal-red);
+            font-weight: 800;
+        }
+
+        .scenario-hint {
+            background: rgba(196, 30, 58, 0.08);
+            border-left: 4px solid var(--cardinal-red);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 14px;
+        }
+
+        .hint-label {
+            font-size: 0.7rem;
+            color: var(--cardinal-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .hint-text {
+            font-size: 0.85rem;
+            color: var(--gray-darker);
+            margin-top: 4px;
+        }
+
+        /* Answer Options */
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .answer-btn {
+            background: var(--white);
+            border: 2px solid var(--gray-medium);
+            border-radius: 12px;
+            padding: 12px 10px;
+            font-weight: 700;
+            color: var(--gray-darker);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .answer-btn:hover {
+            border-color: var(--cardinal-red);
+            background: rgba(196, 30, 58, 0.05);
+        }
+
+        .answer-btn:active {
+            transform: scale(0.97);
+        }
+
+        .answer-btn.correct {
+            border-color: var(--success-green);
+            background: var(--success-green);
+            color: var(--white);
+        }
+
+        .answer-btn.incorrect {
+            border-color: var(--warning-orange);
+            background: var(--warning-orange);
+            color: var(--white);
+        }
+
+        .answer-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Result Overlay */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 20px;
+        }
+
+        .result-overlay.active {
+            display: flex;
+        }
+
+        .result-card {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 35px 28px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            animation: popIn 0.4s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .result-icon.success { background: var(--success-green); }
+        .result-icon.fail { background: var(--warning-orange); }
+
+        .result-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            color: var(--gray-darker);
+            letter-spacing: 2px;
+        }
+
+        .result-message {
+            color: var(--gray-dark);
+            margin: 12px 0 20px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .explanation-card {
+            background: var(--gray-light);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 22px;
+            text-align: left;
+        }
+
+        .explanation-title {
+            font-weight: 800;
+            color: var(--cardinal-red);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .explanation-text {
+            color: var(--gray-darker);
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .result-btn {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            color: var(--white);
+            border: none;
+            padding: 15px 50px;
+            border-radius: 25px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .result-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Achievement Screen */
+        .trophy-card {
+            background: linear-gradient(135deg, var(--gold-accent) 0%, #FFA500 100%);
+            border-radius: 22px;
+            padding: 28px;
+            text-align: center;
+            color: var(--gray-darker);
+            margin-bottom: 25px;
+        }
+
+        .trophy-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+        }
+
+        .trophy-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+        }
+
+        .trophy-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .achievements-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .achievement-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .achievement-icon.earned { background: var(--gold-accent); }
+        .achievement-icon.locked { background: var(--gray-medium); filter: grayscale(100%); }
+
+        .achievement-info { flex: 1; text-align: left; }
+        .achievement-name { font-weight: 800; color: var(--gray-darker); }
+        .achievement-desc { font-size: 0.8rem; color: var(--gray-dark); margin-top: 2px; }
+
+        /* Position Modal */
+        .position-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 300;
+        }
+
+        .position-modal.active { display: flex; }
+
+        .position-modal-content {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 28px 28px 0 0;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            padding: 25px;
+            color: var(--white);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--white);
+        }
+
+        .modal-position-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 65px;
+            top: 12px;
+        }
+
+        .modal-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .modal-subtitle {
+            opacity: 0.9;
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        .modal-body { padding: 22px; }
+
+        .responsibility-section { margin-bottom: 22px; }
+
+        .responsibility-title {
+            font-weight: 800;
+            color: var(--cardinal-red);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .responsibility-list { list-style: none; }
+
+        .responsibility-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: var(--gray-darker);
+        }
+
+        .responsibility-list li:last-child { border-bottom: none; }
+
+        .responsibility-bullet {
+            width: 24px;
+            height: 24px;
+            background: rgba(196, 30, 58, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--cardinal-red);
+            font-size: 0.8rem;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.08) 0%, rgba(139, 0, 0, 0.08) 100%);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .tip-label {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--cardinal-red);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .tip-text {
+            color: var(--gray-darker);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* Level Complete Modal */
+        .level-complete-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 400;
+            padding: 20px;
+        }
+
+        .level-complete-overlay.active { display: flex; }
+
+        .level-complete-card {
+            background: var(--white);
+            border-radius: 28px;
+            padding: 35px 25px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            animation: popIn 0.5s ease;
+        }
+
+        .complete-stars {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .complete-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            color: var(--gray-darker);
+            letter-spacing: 2px;
+        }
+
+        .complete-score {
+            font-size: 1.1rem;
+            color: var(--gray-dark);
+            margin: 15px 0;
+        }
+
+        .complete-score strong {
+            color: var(--cardinal-red);
+            font-size: 1.3rem;
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, var(--cardinal-red) 0%, var(--cardinal-dark) 100%);
+            color: var(--white);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .complete-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-logo">
+            <div class="baseball"></div>
+        </div>
+        <h1 class="splash-title">BASEBALL<br>DEFENDER</h1>
+        <p class="splash-subtitle">Learn to Play Defense Like a Pro! ⚾</p>
+        <button class="start-btn" onclick="startApp()">PLAY BALL!</button>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="header-logo">⚾</div>
+                <span class="header-title">DEFENDER</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-badge">⭐ <span id="totalStars">0</span></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Home Screen -->
+            <div class="screen active" id="homeScreen">
+                <div class="welcome-card">
+                    <p class="welcome-greeting">Welcome back, Slugger!</p>
+                    <h2 class="welcome-name">READY TO PLAY DEFENSE?</h2>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>Overall Progress</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">🏟️ TRAINING LEVELS</h3>
+                <div class="levels-grid" id="levelsGrid"></div>
+
+                <div class="quick-play-card" onclick="startQuickPlay()">
+                    <div class="quick-play-icon">▶️</div>
+                    <div class="quick-play-text">
+                        <h3>QUICK PLAY</h3>
+                        <p>Random scenarios to test your skills!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learn Screen -->
+            <div class="screen" id="learnScreen">
+                <h3 class="section-title">📚 LEARN POSITIONS</h3>
+                <p style="color: var(--gray-dark); margin-bottom: 18px; font-size: 0.9rem;">Tap a position to learn what they do!</p>
+                <div class="position-cards" id="positionCards"></div>
+            </div>
+
+            <!-- Achievements Screen -->
+            <div class="screen" id="achieveScreen">
+                <div class="trophy-card">
+                    <div class="trophy-icon">🏆</div>
+                    <h2 class="trophy-title">YOUR ACHIEVEMENTS</h2>
+                    <p class="trophy-subtitle">Keep playing to unlock more!</p>
+                </div>
+                <h3 class="section-title">🎖️ BADGES</h3>
+                <div class="achievements-grid" id="achievementsGrid"></div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-screen="homeScreen">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" data-screen="learnScreen">
+                <span class="nav-icon">📖</span>
+                <span>Learn</span>
+            </div>
+            <div class="nav-item" data-screen="achieveScreen">
+                <span class="nav-icon">🏅</span>
+                <span>Badges</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameContainer">
+        <div class="game-header">
+            <button class="game-back-btn" onclick="exitGame()">←</button>
+            <div class="game-info">
+                <div class="game-level" id="gameLevelLabel">Level 1</div>
+                <div class="game-scenario-num" id="gameScenarioNum">Scenario 1 of 5</div>
+            </div>
+            <div class="game-score">⭐ <span id="gameScore">0</span></div>
+        </div>
+
+        <div class="field-container">
+            <div class="baseball-field">
+                <div class="foul-line foul-line-left"></div>
+                <div class="foul-line foul-line-right"></div>
+                <div class="infield-dirt"><div class="infield-grass"></div></div>
+                <div class="base home-plate"></div>
+                <div class="base first-base"></div>
+                <div class="base second-base"></div>
+                <div class="base third-base"></div>
+                
+                <div class="player player-pitcher" data-position="P">P</div>
+                <div class="player player-catcher" data-position="C">C</div>
+                <div class="player player-1b" data-position="1B">1B</div>
+                <div class="player player-2b" data-position="2B">2B</div>
+                <div class="player player-3b" data-position="3B">3B</div>
+                <div class="player player-ss" data-position="SS">SS</div>
+                <div class="player player-lf" data-position="LF">LF</div>
+                <div class="player player-cf" data-position="CF">CF</div>
+                <div class="player player-rf" data-position="RF">RF</div>
+                
+                <div class="runner on-first" id="runnerFirst"></div>
+                <div class="runner on-second" id="runnerSecond"></div>
+                <div class="runner on-third" id="runnerThird"></div>
+            </div>
+        </div>
+
+        <div class="scenario-panel">
+            <div class="scenario-situation">
+                <div class="situation-label">📍 SITUATION</div>
+                <div class="situation-text" id="situationText">Nobody on base</div>
+            </div>
+            <div class="scenario-question" id="scenarioQuestion">
+                Where should the <span class="position-highlight">Right Fielder</span> go?
+            </div>
+            <div class="scenario-hint" id="scenarioHint">
+                <div class="hint-label">💡 HINT</div>
+                <div class="hint-text" id="hintText"></div>
+            </div>
+            <div class="answer-options" id="answerOptions"></div>
+        </div>
+    </div>
+
+    <!-- Result Overlay -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <div class="result-icon" id="resultIcon">✓</div>
+            <h2 class="result-title" id="resultTitle">GREAT JOB!</h2>
+            <p class="result-message" id="resultMessage">You got it right!</p>
+            <div class="explanation-card">
+                <div class="explanation-title">💡 Why This Works</div>
+                <p class="explanation-text" id="explanationText"></p>
+            </div>
+            <button class="result-btn" id="resultBtn" onclick="nextScenario()">NEXT</button>
+        </div>
+    </div>
+
+    <!-- Level Complete Overlay -->
+    <div class="level-complete-overlay" id="levelCompleteOverlay">
+        <div class="level-complete-card">
+            <div class="complete-stars" id="completeStars">⭐⭐⭐</div>
+            <h2 class="complete-title" id="completeTitle">LEVEL COMPLETE!</h2>
+            <p class="complete-score">You scored <strong id="completeScore">5/5</strong></p>
+            <button class="complete-btn" onclick="finishLevel()">CONTINUE</button>
+        </div>
+    </div>
+
+    <!-- Position Modal -->
+    <div class="position-modal" id="positionModal">
+        <div class="position-modal-content">
+            <div class="modal-header">
+                <span class="modal-position-num" id="modalPositionNum">9</span>
+                <button class="modal-close" onclick="closePositionModal()">✕</button>
+                <h2 class="modal-title" id="modalTitle">RIGHT FIELDER</h2>
+                <p class="modal-subtitle" id="modalSubtitle">Position #9</p>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            totalStars: 0,
+            levelsCompleted: [],
+            levelStars: {},
+            achievements: []
+        };
+
+        // Position Data
+        const positions = [
+            { id: 'P', name: 'Pitcher', number: 1, description: 'Throws the ball to the batter',
+              responsibilities: ['Back up third base when runners might go there', 'Back up home plate on throws from outfield', 'Cover first base on balls hit to the right side', 'Field bunts and ground balls hit back to the mound'],
+              tip: 'The pitcher should ALWAYS be moving after every pitch! If the ball is hit, run to back up the base where the lead runner is going.' },
+            { id: 'C', name: 'Catcher', number: 2, description: 'Catches pitches behind home plate',
+              responsibilities: ['Direct traffic - tell fielders where to throw', 'Cover home plate on all plays', 'Back up first base on infield grounders when bases are empty', 'Field bunts in front of home plate'],
+              tip: 'You are the "quarterback" of the defense! You can see the whole field, so help your teammates by calling out where to throw the ball.' },
+            { id: '1B', name: 'First Baseman', number: 3, description: 'Covers first base',
+              responsibilities: ['Cover first base on ground balls', 'Be the cutoff man for throws from right field to home', 'Field balls hit to the right side of the infield', 'Hold runners on first base'],
+              tip: 'On balls hit to the outfield with runners on, move toward the mound to be the cutoff man between the outfielder and home plate.' },
+            { id: '2B', name: 'Second Baseman', number: 4, description: 'Covers the right side of the infield',
+              responsibilities: ['Cover second base on steal attempts from the right side', 'Turn double plays', 'Cover first base when the first baseman fields a ball', 'Be the relay man on balls hit to right-center field'],
+              tip: 'Work together with the shortstop! When a ball is hit, one of you covers second base while the other goes for the ball or backs up.' },
+            { id: '3B', name: 'Third Baseman', number: 5, description: 'Covers third base',
+              responsibilities: ['Cover third base on all plays', 'Field bunts and slow rollers', 'Guard the line in late-game situations', 'Be ready for hard-hit balls - this is the "hot corner"!'],
+              tip: 'Balls come FAST to third base! Stay in your ready position and react quickly. Don\'t be afraid of the ball!' },
+            { id: 'SS', name: 'Shortstop', number: 6, description: 'Covers the left side of the infield',
+              responsibilities: ['Cover second base on most steal attempts', 'Turn double plays', 'Be the cutoff man for throws from left and center field', 'Cover third base when the third baseman charges a bunt'],
+              tip: 'You handle the most ground balls in the infield. Stay low, keep your glove down, and be ready to move in any direction!' },
+            { id: 'LF', name: 'Left Fielder', number: 7, description: 'Covers the left side of the outfield',
+              responsibilities: ['Catch fly balls hit to left field', 'Back up third base on throws from the right side', 'Back up the center fielder on balls hit to center', 'Back up throws to second base from right field'],
+              tip: 'Always be moving toward the play! Even if you\'re not catching the ball, get behind the base in case of a bad throw.' },
+            { id: 'CF', name: 'Center Fielder', number: 8, description: 'Covers the center of the outfield',
+              responsibilities: ['Catch fly balls - you have priority over other outfielders', 'Back up second base on throws from the corners', 'Back up the left and right fielders', 'Direct the other outfielders on fly balls'],
+              tip: 'You are the "captain" of the outfield! Call for the ball loudly and take charge on any ball you can reach.' },
+            { id: 'RF', name: 'Right Fielder', number: 9, description: 'Covers the right side of the outfield',
+              responsibilities: ['Catch fly balls hit to right field', 'Back up first base on ALL infield ground balls', 'Back up second base on throws from the left side', 'Make strong throws to third base - it\'s a long throw!'],
+              tip: 'ALWAYS run in to back up first base on ground balls! This is one of the most important jobs in baseball that many players forget.' }
+        ];
+
+        // Training Levels
+        const levels = [
+            { name: 'Rookie', description: 'No runners on base', scenarios: [
+                { situation: 'Nobody on base - Ground ball to second baseman', askPosition: 'RF', correctAnswer: 'Back up 1st base',
+                  options: ['Back up 1st base', 'Stay in position', 'Run to 2nd base', 'Go to home plate'],
+                  explanation: 'The right fielder backs up first base on ALL infield ground balls! If the throw gets past the first baseman, you\'re there to stop it.',
+                  hint: 'Think about where the throw is going...' },
+                { situation: 'Nobody on base - Fly ball to left field', askPosition: 'CF', correctAnswer: 'Back up LF',
+                  options: ['Back up LF', 'Cover 2nd base', 'Stay put', 'Go to 3rd base'],
+                  explanation: 'The center fielder backs up the other outfielders. If the left fielder drops the ball, you\'re there to pick it up!',
+                  hint: 'What if the ball gets past the left fielder?' },
+                { situation: 'Nobody on base - Ground ball to shortstop', askPosition: 'RF', correctAnswer: 'Back up 1st base',
+                  options: ['Back up 1st base', 'Back up 2nd base', 'Stay in position', 'Cover 3rd base'],
+                  explanation: 'Even on a ball to the left side, the right fielder runs in to back up first base. The throw is going to first!',
+                  hint: 'Where will the shortstop throw the ball?' },
+                { situation: 'Nobody on base - Ground ball to first baseman', askPosition: '2B', correctAnswer: 'Cover 1st base',
+                  options: ['Cover 1st base', 'Stay at your position', 'Go to 2nd base', 'Back up pitcher'],
+                  explanation: 'When the first baseman fields a ground ball, someone needs to cover first base for the throw. That\'s your job!',
+                  hint: 'The first baseman can\'t be in two places at once...' },
+                { situation: 'Nobody on base - Single to center field', askPosition: 'P', correctAnswer: 'Back up 2nd base',
+                  options: ['Back up 2nd base', 'Stay on mound', 'Cover home', 'Go to 1st base'],
+                  explanation: 'On a base hit with nobody on, the throw will come to second base. The pitcher backs up in case of an overthrow!',
+                  hint: 'The runner will try to stretch it to second...' }
+            ]},
+            { name: 'Minor League', description: 'Runner on first base', scenarios: [
+                { situation: 'Runner on 1st - Single to left field', askPosition: 'P', correctAnswer: 'Back up 3rd base',
+                  options: ['Back up 3rd base', 'Back up 2nd base', 'Cover home', 'Stay on mound'],
+                  explanation: 'With a runner on first, they\'ll try to go to third on a single. The pitcher backs up third base!',
+                  hint: 'Where is the runner on first trying to go?', runners: ['first'] },
+                { situation: 'Runner on 1st - Ground ball to shortstop', askPosition: '2B', correctAnswer: 'Cover 2nd for double play',
+                  options: ['Cover 2nd for double play', 'Cover 1st base', 'Back up SS', 'Stay in position'],
+                  explanation: 'This is a double play situation! The second baseman covers the bag to receive the throw from the shortstop.',
+                  hint: 'We might be able to get two outs here!', runners: ['first'] },
+                { situation: 'Runner on 1st - Single to right field', askPosition: 'CF', correctAnswer: 'Back up RF',
+                  options: ['Back up RF', 'Cover 2nd base', 'Back up 3rd base', 'Go to home plate'],
+                  explanation: 'The center fielder backs up the right fielder. If the ball gets past, you stop it from rolling to the wall!',
+                  hint: 'What if the right fielder bobbles it?', runners: ['first'] },
+                { situation: 'Runner on 1st - Fly ball to right field', askPosition: 'SS', correctAnswer: 'Be the cutoff to 3rd',
+                  options: ['Be the cutoff to 3rd', 'Cover 2nd base', 'Back up 3rd base', 'Stay in position'],
+                  explanation: 'On a deep fly, the runner might tag up. The shortstop becomes the cutoff man between right field and third base.',
+                  hint: 'The runner might tag up and try for third...', runners: ['first'] },
+                { situation: 'Runner on 1st - Bunt towards 3rd base', askPosition: 'SS', correctAnswer: 'Cover 3rd base',
+                  options: ['Cover 3rd base', 'Cover 2nd base', 'Field the bunt', 'Back up pitcher'],
+                  explanation: 'When the third baseman charges a bunt, someone must cover third! The shortstop slides over.',
+                  hint: 'Who covers third if the third baseman fields the bunt?', runners: ['first'] }
+            ]},
+            { name: 'Major League', description: 'Multiple runners', scenarios: [
+                { situation: 'Runners on 1st & 2nd - Single to center', askPosition: 'P', correctAnswer: 'Back up home plate',
+                  options: ['Back up home plate', 'Back up 3rd base', 'Cover 2nd base', 'Stay on mound'],
+                  explanation: 'With a runner on second, they\'ll try to score on a single! The pitcher backs up home plate.',
+                  hint: 'The runner from second is trying to score!', runners: ['first', 'second'] },
+                { situation: 'Runner on 2nd - Single to left field', askPosition: '3B', correctAnswer: 'Cover 3rd base',
+                  options: ['Cover 3rd base', 'Be the cutoff', 'Back up home', 'Field position'],
+                  explanation: 'The third baseman must always cover third base! Let the shortstop be the cutoff man.',
+                  hint: 'Where is your base?', runners: ['second'] },
+                { situation: 'Runners on 1st & 3rd - Ground ball to 2nd baseman', askPosition: 'SS', correctAnswer: 'Cover 2nd for force out',
+                  options: ['Cover 2nd for force out', 'Cover 3rd base', 'Watch the runner', 'Back up 1st base'],
+                  explanation: 'Go for the force out at second! The runner on third usually won\'t go on a ground ball.',
+                  hint: 'Get the sure out first!', runners: ['first', 'third'] },
+                { situation: 'Runner on 3rd - Fly ball to left field', askPosition: 'LF', correctAnswer: 'Catch and throw home',
+                  options: ['Catch and throw home', 'Just catch it', 'Throw to 2nd', 'Throw to 3rd'],
+                  explanation: 'Catch the ball and get ready to throw home! The runner will try to tag up and score.',
+                  hint: 'What will the runner on third do after you catch it?', runners: ['third'] },
+                { situation: 'Bases loaded - Ground ball to pitcher', askPosition: 'C', correctAnswer: 'Cover home for force',
+                  options: ['Cover home for force', 'Back up 1st base', 'Direct the throw', 'Stay crouched'],
+                  explanation: 'With bases loaded, home plate is a force out! Stand at home and receive the throw.',
+                  hint: 'Where is the easiest force out?', runners: ['first', 'second', 'third'] }
+            ]},
+            { name: 'All-Star', description: 'Advanced situations', scenarios: [
+                { situation: 'Nobody on - Double to right-center gap', askPosition: 'SS', correctAnswer: 'Be the relay man',
+                  options: ['Be the relay man', 'Cover 2nd base', 'Cover 3rd base', 'Back up 2nd base'],
+                  explanation: 'On a ball in the gap, the shortstop goes out to be the relay man. Line up between the outfielder and third base!',
+                  hint: 'The outfielder needs help getting the ball to the infield...' },
+                { situation: 'Runner on 2nd - Passed ball', askPosition: 'P', correctAnswer: 'Cover home plate',
+                  options: ['Cover home plate', 'Back up catcher', 'Stay on mound', 'Cover 3rd base'],
+                  explanation: 'When the catcher chases a passed ball, the pitcher must cover home plate!',
+                  hint: 'Who covers home if the catcher is chasing the ball?', runners: ['second'] },
+                { situation: 'Runner on 1st - Ground ball up the middle', askPosition: '1B', correctAnswer: 'Cover 1st base',
+                  options: ['Cover 1st base', 'Be the cutoff', 'Back up 2nd', 'Chase the ball'],
+                  explanation: 'Stay at your base! The middle infielders will handle the ball. Be ready for the throw to first.',
+                  hint: 'Don\'t leave your base unattended!', runners: ['first'] },
+                { situation: 'Runners on 1st & 2nd - Line drive to RF', askPosition: 'CF', correctAnswer: 'Back up RF',
+                  options: ['Back up RF', 'Cover 2nd base', 'Be the cutoff', 'Back up 3rd'],
+                  explanation: 'Always back up your fellow outfielders! If the ball gets past, runners will keep going.',
+                  hint: 'Support your teammate!', runners: ['first', 'second'] },
+                { situation: 'Runner on 3rd, 1 out - Fly to medium left', askPosition: '3B', correctAnswer: 'Watch runner, cover base',
+                  options: ['Watch runner, cover base', 'Be the cutoff', 'Tag the runner', 'Back up home'],
+                  explanation: 'Stay at third! Watch if the runner tags up, and be ready if the throw comes to third.',
+                  hint: 'The runner might fake a tag...', runners: ['third'] }
+            ]}
+        ];
+
+        // Achievements
+        const achievements = [
+            { id: 'first_star', name: 'First Star', desc: 'Earn your first star', icon: '⭐' },
+            { id: 'level_1', name: 'Rookie Complete', desc: 'Complete Level 1', icon: '🎖️' },
+            { id: 'five_stars', name: 'Rising Star', desc: 'Earn 5 stars', icon: '🌟' },
+            { id: 'level_2', name: 'Minor Leaguer', desc: 'Complete Level 2', icon: '🏅' },
+            { id: 'ten_stars', name: 'All-Star', desc: 'Earn 10 stars', icon: '✨' },
+            { id: 'level_3', name: 'Major Leaguer', desc: 'Complete Level 3', icon: '🥇' },
+            { id: 'perfect', name: 'Perfect Game', desc: 'Get all answers right in a level', icon: '💎' },
+            { id: 'all_complete', name: 'MVP', desc: 'Complete all levels', icon: '🏆' }
+        ];
+
+        // Game variables
+        let currentScenarios = [];
+        let currentScenarioIndex = 0;
+        let levelScore = 0;
+        let isQuickPlay = false;
+        let currentLevelIndex = 0;
+
+        // Initialize
+        function loadGameState() {
+            const saved = localStorage.getItem('baseballDefenderState');
+            if (saved) gameState = JSON.parse(saved);
+            updateUI();
+        }
+
+        function saveGameState() {
+            localStorage.setItem('baseballDefenderState', JSON.stringify(gameState));
+        }
+
+        function startApp() {
+            document.getElementById('splashScreen').classList.add('hidden');
+            loadGameState();
+            renderLevels();
+            renderPositionCards();
+            renderAchievements();
+            setupNavigation();
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const screenId = item.dataset.screen;
+                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                    document.getElementById(screenId).classList.add('active');
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('totalStars').textContent = gameState.totalStars;
+            const totalScenarios = levels.length * 5;
+            const completedScenarios = gameState.levelsCompleted.length * 5;
+            const progress = Math.round((completedScenarios / totalScenarios) * 100);
+            document.getElementById('progressPercent').textContent = `${progress}%`;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function renderLevels() {
+            const grid = document.getElementById('levelsGrid');
+            grid.innerHTML = '';
+            levels.forEach((level, index) => {
+                const isUnlocked = index === 0 || gameState.levelsCompleted.includes(index - 1);
+                const isCompleted = gameState.levelsCompleted.includes(index);
+                const stars = gameState.levelStars[index] || 0;
+                
+                const card = document.createElement('div');
+                card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'} ${isCompleted ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="level-number">${isCompleted ? '✓' : index + 1}</div>
+                    <div class="level-title">${level.name}</div>
+                    <div class="level-desc">${level.description}</div>
+                    <div class="level-stars">
+                        ${[1,2,3].map(s => `<span class="star ${stars >= s ? 'earned' : ''}">★</span>`).join('')}
+                    </div>
+                    ${!isUnlocked ? '<span class="lock-icon">🔒</span>' : ''}
+                `;
+                if (isUnlocked) card.onclick = () => startLevel(index);
+                grid.appendChild(card);
+            });
+        }
+
+        function renderPositionCards() {
+            const container = document.getElementById('positionCards');
+            container.innerHTML = '';
+            positions.forEach(pos => {
+                const card = document.createElement('div');
+                card.className = 'position-card';
+                card.innerHTML = `
+                    <div class="position-icon">${pos.number}</div>
+                    <div class="position-info">
+                        <div class="position-name">${pos.name}</div>
+                        <div class="position-desc">${pos.description}</div>
+                    </div>
+                    <span class="position-arrow">›</span>
+                `;
+                card.onclick = () => showPositionModal(pos);
+                container.appendChild(card);
+            });
+        }
+
+        function showPositionModal(pos) {
+            document.getElementById('modalPositionNum').textContent = pos.number;
+            document.getElementById('modalTitle').textContent = pos.name.toUpperCase();
+            document.getElementById('modalSubtitle').textContent = `Position #${pos.number}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="responsibility-section">
+                    <div class="responsibility-title">✓ Your Responsibilities</div>
+                    <ul class="responsibility-list">
+                        ${pos.responsibilities.map(r => `<li><span class="responsibility-bullet">•</span><span>${r}</span></li>`).join('')}
+                    </ul>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-label">💡 PRO TIP</div>
+                    <p class="tip-text">${pos.tip}</p>
+                </div>
+            `;
+            document.getElementById('positionModal').classList.add('active');
+        }
+
+        function closePositionModal() {
+            document.getElementById('positionModal').classList.remove('active');
+        }
+
+        function renderAchievements() {
+            const grid = document.getElementById('achievementsGrid');
+            grid.innerHTML = '';
+            achievements.forEach(ach => {
+                const earned = checkAchievement(ach.id);
+                const card = document.createElement('div');
+                card.className = 'achievement-card';
+                card.innerHTML = `
+                    <div class="achievement-icon ${earned ? 'earned' : 'locked'}">${ach.icon}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${ach.name}</div>
+                        <div class="achievement-desc">${ach.desc}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function checkAchievement(id) {
+            if (id === 'first_star') return gameState.totalStars >= 1;
+            if (id === 'five_stars') return gameState.totalStars >= 5;
+            if (id === 'ten_stars') return gameState.totalStars >= 10;
+            if (id === 'level_1') return gameState.levelsCompleted.includes(0);
+            if (id === 'level_2') return gameState.levelsCompleted.includes(1);
+            if (id === 'level_3') return gameState.levelsCompleted.includes(2);
+            if (id === 'perfect') return gameState.achievements.includes('perfect');
+            if (id === 'all_complete') return gameState.levelsCompleted.length === levels.length;
+            return false;
+        }
+
+        function startLevel(levelIndex) {
+            isQuickPlay = false;
+            currentLevelIndex = levelIndex;
+            currentScenarios = [...levels[levelIndex].scenarios];
+            currentScenarioIndex = 0;
+            levelScore = 0;
+            document.getElementById('gameLevelLabel').textContent = `Level ${levelIndex + 1}: ${levels[levelIndex].name}`;
+            document.getElementById('gameContainer').classList.add('active');
+            loadScenario();
+        }
+
+        function startQuickPlay() {
+            isQuickPlay = true;
+            currentScenarios = [];
+            const allScenarios = levels.flatMap(level => level.scenarios);
+            for (let i = 0; i < 5; i++) {
+                const idx = Math.floor(Math.random() * allScenarios.length);
+                currentScenarios.push({...allScenarios[idx]});
+            }
+            currentScenarioIndex = 0;
+            levelScore = 0;
+            document.getElementById('gameLevelLabel').textContent = 'Quick Play';
+            document.getElementById('gameContainer').classList.add('active');
+            loadScenario();
+        }
+
+        function loadScenario() {
+            const scenario = currentScenarios[currentScenarioIndex];
+            document.getElementById('gameScenarioNum').textContent = `Scenario ${currentScenarioIndex + 1} of ${currentScenarios.length}`;
+            document.getElementById('gameScore').textContent = levelScore;
+            document.getElementById('situationText').textContent = scenario.situation;
+            
+            const posName = positions.find(p => p.id === scenario.askPosition)?.name || scenario.askPosition;
+            document.getElementById('scenarioQuestion').innerHTML = `Where should the <span class="position-highlight">${posName}</span> go?`;
+            document.getElementById('hintText').textContent = scenario.hint;
+            document.getElementById('scenarioHint').style.display = 'block';
+
+            // Reset runners
+            ['runnerFirst', 'runnerSecond', 'runnerThird'].forEach(id => {
+                document.getElementById(id).classList.remove('visible');
+            });
+            if (scenario.runners) {
+                scenario.runners.forEach(r => {
+                    if (r === 'first') document.getElementById('runnerFirst').classList.add('visible');
+                    if (r === 'second') document.getElementById('runnerSecond').classList.add('visible');
+                    if (r === 'third') document.getElementById('runnerThird').classList.add('visible');
+                });
+            }
+
+            // Highlight player
+            document.querySelectorAll('.player').forEach(p => {
+                p.classList.remove('selectable', 'correct', 'incorrect');
+                if (p.dataset.position === scenario.askPosition) p.classList.add('selectable');
+            });
+
+            // Render answers
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+            const shuffled = [...scenario.options].sort(() => Math.random() - 0.5);
+            shuffled.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(option, scenario);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(answer, scenario) {
+            const isCorrect = answer === scenario.correctAnswer;
+            
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === scenario.correctAnswer) btn.classList.add('correct');
+                else if (btn.textContent === answer && !isCorrect) btn.classList.add('incorrect');
+            });
+
+            document.querySelectorAll('.player').forEach(p => {
+                p.classList.remove('selectable');
+                if (p.dataset.position === scenario.askPosition) {
+                    p.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+
+            if (isCorrect) levelScore++;
+            showResult(isCorrect, scenario);
+        }
+
+        function showResult(isCorrect, scenario) {
+            const icon = document.getElementById('resultIcon');
+            icon.className = `result-icon ${isCorrect ? 'success' : 'fail'}`;
+            icon.textContent = isCorrect ? '✓' : '✗';
+            
+            document.getElementById('resultTitle').textContent = isCorrect ? 'GREAT JOB!' : 'NOT QUITE!';
+            document.getElementById('resultMessage').textContent = isCorrect 
+                ? 'You got it right! ⭐' 
+                : `The correct answer was: ${scenario.correctAnswer}`;
+            document.getElementById('explanationText').textContent = scenario.explanation;
+            
+            const isLast = currentScenarioIndex >= currentScenarios.length - 1;
+            document.getElementById('resultBtn').textContent = isLast ? 'FINISH' : 'NEXT';
+            document.getElementById('resultOverlay').classList.add('active');
+        }
+
+        function nextScenario() {
+            document.getElementById('resultOverlay').classList.remove('active');
+            currentScenarioIndex++;
+            
+            if (currentScenarioIndex >= currentScenarios.length) {
+                showLevelComplete();
+            } else {
+                loadScenario();
+            }
+        }
+
+        function showLevelComplete() {
+            const stars = Math.ceil((levelScore / currentScenarios.length) * 3);
+            document.getElementById('completeStars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+            document.getElementById('completeTitle').textContent = isQuickPlay ? 'PRACTICE COMPLETE!' : 'LEVEL COMPLETE!';
+            document.getElementById('completeScore').textContent = `${levelScore}/${currentScenarios.length}`;
+            document.getElementById('levelCompleteOverlay').classList.add('active');
+        }
+
+        function finishLevel() {
+            document.getElementById('levelCompleteOverlay').classList.remove('active');
+            
+            const stars = Math.ceil((levelScore / currentScenarios.length) * 3);
+            
+            if (!isQuickPlay) {
+                if (!gameState.levelsCompleted.includes(currentLevelIndex)) {
+                    gameState.levelsCompleted.push(currentLevelIndex);
+                }
+                const currentStars = gameState.levelStars[currentLevelIndex] || 0;
+                if (stars > currentStars) {
+                    gameState.totalStars += (stars - currentStars);
+                    gameState.levelStars[currentLevelIndex] = stars;
+                }
+                if (levelScore === currentScenarios.length && !gameState.achievements.includes('perfect')) {
+                    gameState.achievements.push('perfect');
+                }
+            } else {
+                gameState.totalStars += stars;
+            }
+            
+            saveGameState();
+            exitGame();
+            renderLevels();
+            renderAchievements();
+            updateUI();
+        }
+
+        function exitGame() {
+            document.getElementById('gameContainer').classList.remove('active');
+            document.getElementById('resultOverlay').classList.remove('active');
+            document.getElementById('levelCompleteOverlay').classList.remove('active');
+        }
+
+        // Modal close on outside click
+        document.getElementById('positionModal').addEventListener('click', function(e) {
+            if (e.target === this) closePositionModal();
+        });
+    </script>
+</body>
+</html>
